@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="imagetoolbar" content="no">
+<meta http-equiv="X-UA-Compatible" content="IE=10,chrome=1">
+<title>CutURL</title>
+<link rel="stylesheet" type="text/css" href="{{ url_for('cuturl.static', filename='css/default.css') }}">
+<script src="{{ url_for('cuturl.static', filename='js/jquery-2.1.3.min.js') }}"></script>
+<script type="text/javascript">
+    function repos() {
+            var top = ($('body').height() - $("#container").height())/2;
+            $("#container").css('top', top );
+            $("#message").css({
+                    'top' : top + $("#container").height(),
+                    'left' : ($('body').width() - $("#message").width()) / 2
+                });
+            $("#logo").css('top', top - $("#logo").height());
+    }
+    function show_msg(data) {
+        $("#message").stop();
+        if(data.status == true)
+        {
+            $("#message").slideUp(500, function(){
+                $("#message").html('<a href="'+data.cuturl+'" target="_blank">'+data.cuturl+'</a>');
+                $("#message").slideDown(500);
+            });
+        }
+        else
+        {
+            $("#message").slideUp(500, function(){
+                $("#message").text(data.message);
+                $("#message").slideDown(500);
+            });
+        }
+    }
+    $(document).ready(function(){
+    	repos();
+        $(window).resize(repos);
+        $("#submit").click(function(){
+            var data = {to_url : $("#to_url").val()};
+            
+            console.log(data);
+
+            $.ajax({
+                type: "POST",
+                url: "/api/v1.0/addurl",
+                data: JSON.stringify(data),
+                dataType: 'json',
+                contentType: 'application/json',
+                success: function (res) {
+                    // console.log(res);
+                    show_msg(res)
+                }
+            });
+        });
+    })
+</script>
+</head>
+<body>
+    <div id="wrap">
+        <div id="logo">
+            <span style="color: #4B7CE0;">Cut</span>
+            <span style="color: #555;">URL</span>
+        </div>
+        <div id="container">
+            <div id="content">
+                <input id="to_url" type="text" value="http://">
+                <input id="submit" type="button" value="Cut!">
+            </div>
+        </div>
+        <div id="message">
+        </div>
+    </div>
+</body>
+</html>
