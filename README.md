@@ -1,7 +1,6 @@
 CutURL
 ===
 The simple URL Shortener app using the Flask framework
----
 
 Installation
 ----
